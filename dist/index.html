@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="pl-PL">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="author" content="MK">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Knapsack Problem</title>
+    <link rel="stylesheet" href='../src/style.css'>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.2/Chart.bundle.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.0/umd/popper.min.js" integrity="sha384-cs/chFZiN24E4KMATLdqdvsezGxaGsi4hLGOzlXwp5UZB1LY//20VyM2taTB4QvJ" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css" integrity="sha384-9gVQ4dYFwwWSjIDZnLEWnxCjeSWFphJiwGPXr1jddIhOegiu1FwO5qRGvFXOdJZ4" crossorigin="anonymous">
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.min.js" integrity="sha384-uefMccjFJAIv6A+rW+L4AHf99KvxDjWSu1z9VI8SKNVmz4sk7buKt/6v9KI65qnm" crossorigin="anonymous"></script>
+    <script src="./bundle.js"></script>
+</head>
+
+<body>
+    <div class="container-fluid">
+        <div>
+            <button data-toggle="collapse" data-target="#info" class="btn btn-info">Show/hide info - click me</button>
+            <pre id="info" class="collapse">
+                Genetic Algorithm
+                Aplication uses genetic algorithm to solve (0/1) knapsack problem.
+                Algorithm steps:
+                    1. Random initial population (randomly selected individual can be incorrect, means OVERSIZE)
+                    2. Rate entire population - oversize individual are penalised [adaptationValue = (1/exceededSize) * individualValue]
+                    3. Check stop condition (iteration > maxIterations)
+                    4. Select individuals for reproduction
+                    5. Create a new population
+                    6. Mutate individuals
+                    7. Use inverse operator
+                    8. Replace previous population with new population
+                    9. Go to step 2
+                ==============================
+                1. Load file (.json) as table of objects with value and weight properties, for example:
+                [
+                    {
+                        "value": 5,
+                        "weight": 10
+                    },
+                    {
+                        "value": 4,
+                        "weight": 8
+                    },
+                    {
+                        "value": 7,
+                        "weight": 9
+                    },
+                    {
+                        "value": 8,
+                        "weight": 15
+                    }
+                ]
+                2. Choose immutable settings - that settings will be the same for all algorithm run (every mutable settings)
+                    knapsack size must be greater than 0
+                    population size must be EVEN
+                    max iterations must be greater than 0
+                    same initial population - use the same population for all algorithm run (every mutable settings) (default true)
+                3. Choose mutable settings - that settings can be DIFFERENT for all algorithm run
+                    tournament group size must be greater than 0
+                    elitism - true means that the worst individual (with the least adaptationValue)
+                        from new population will be replaced by the best indyvidual
+                        (with the best adaptationValue and NOT oversize if can be) from last population
+                    crossing probability - number beetwen <0, 1> - use DOT (.) instead of comma (,)
+                    mutation probability - as above
+                    inversion probability - as above
+                4. Click 'add settings to settings list'
+                5. Click 'start algorithm' or go to step 3
+                ==============================
+                Chart show algorithm results
+                x axe show number of iteration
+                y axe show best individual adaptation value (must be NOT oversize) in that iteration - 0 when all individuals are oversize
+                ==============================
+                Results (bestIndyviduals objects table) also will be show in console (F12 -> console tab)
+
+                Cuckoo Search Algorithm
+                tutaj bedzie opis
+            </pre>
+        </div>
+        <hr>
+
+        <div class="row">
+            <div class="col-sm-12">
+                <form name="settingsForm" onsubmit="return false">
+                    <h4>Immutable algorithm settings (same for all algorithm run)</h4>
+                    <label for="file">plik z danymi (.json)</label>
+                    <input name="file" type="file" name="file" accept=".json">
+                    <br>
+                    <label for="knapsackSize">knapsack size</label>
+                    <input name="knapsackSize" type="number" placeholder=">0">
+                    <br>
+                    <label for="populationSize">population size</label>
+                    <input name="populationSize" type="number" placeholder=" must be even">
+                    <br>
+                    <label for="maxIterations">max iterations</label>
+                    <input name="maxIterations" type="number" placeholder=">0">
+                    <br>
+                    <label for="sameInitialPopulation">same initial population for all below settings</label>
+                    <input name="sameInitialPopulation" type="checkbox" checked="checked">
+                    <br>
+                    <hr>
+                    <label for="drawChartCheckbox">draw chart</label>
+                    <input name="drawChartCheckbox" type="checkbox">
+                    <br>
+                    <label for="showConsoleResultsCheckbox">show results in console (F12)</label>
+                    <input name="showConsoleResultsCheckbox" type="checkbox" checked="checked">
+                    <hr>
+            </div>
+            <h4>Mutable algorithm settings (can be different for all algorithm run)</h4>
+
+            <div class="col-sm-6">
+                <h6>Genetic algorithm</h6>
+                <label for="selectionMethod">selection method</label>
+                <select name="selectionMethod" name="selectionMethod">
+                    <option value="roulette wheel" selected>roulette wheel</option>
+                    <option value="tournament">tournament</option>
+                    <option value="random">random</option>
+                </select>
+                <br>
+
+                <label for="tournamentGroupSize">tournament group size</label>
+                <input name="tournamentGroupSize" type="number" placeholder=">0">
+                <br>
+
+                <label for="crossingMethod">crossing method</label>
+                <select name="crossingMethod" name="crossingMethod">
+                    <option value="one point" selected>one point</option>
+                    <option value="two point">two point</option>
+                    <option value="evenly">evenly</option>
+                    <option value="arithmetic">arithmetic</option>
+                </select>
+                <br>
+
+                <label for="elitism">elitism?</label>
+                <input name="elitism" type="checkbox" name="elitism">
+                <br>
+
+                <label for="crossingProbability">crossing probability</label>
+                <input name="crossingProbability" type="text" placeholder="<0, 1> (use dot)">
+                <br>
+                <label for="mutationProbability">mutation probability</label>
+                <input name="mutationProbability" type="text" placeholder="<0, 1> (as above)">
+                <br>
+                <label for="inversionProbability">inversion probability</label>
+                <input name="inversionProbability" type="text" placeholder="<0, 1> (as above)">
+                <br>
+
+                <button id="addGASettingsButton" class="btn btn-primary">add settings to settings list</button>
+                <button id="addGARandomSettingsButton" class="btn btn-primary">add random settings to settings list</button>
+            </div>
+
+            <div class="col-sm-6">
+                <h6>Cuckoo Search algorithm</h6>
+                <label for="scale">scale (beta parametr in Levy's distribution)</label>
+                <input name="scale" type="text" placeholder=">0 (use dot)">
+                <br>
+                <label for="abandonmentProbability">abandonment probability</label>
+                <input name="abandonmentProbability" type="text" placeholder="<0, 1> (as above)">
+                <br>
+
+                <button id="addCSASettingsButton" class="btn btn-primary">add settings to settings list</button>
+                <button id="addCSARandomSettingsButton" class="btn btn-primary">add random settings to settings list</button>
+            </div>
+                </form>
+        </div>
+
+        <hr>
+        <div>
+            <table id="settingsTable" class="table table-striped">
+                <thead class="thead-dark">
+                    <tr>
+                        <th scope='col' class='text-center'>S#</th>
+                        <th scope='col' class='text-center'>algorithm</th>
+                        <th scope='col' class='text-center'>selection method</th>
+                        <th scope='col' class='text-center'>tournament group size</th>
+                        <th scope='col' class='text-center'>crossing method</th>
+                        <th scope='col' class='text-center'>elitism</th>
+                        <th scope='col' class='text-center'>crossing probability</th>
+                        <th scope='col' class='text-center'>mutation probability</th>
+                        <th scope='col' class='text-center'>inversion probability</th>
+                        <th scope='col' class='text-center'>scale</th>
+                        <th scope='col' class='text-center'>abandonment probability</th>
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+        </div>
+
+        <hr>
+        <div class="row">
+            <div class="col-sm-12">
+                <button id="startButton" class="btn btn-success">start algorithms</button>
+                <button id="resetSettingsButton" class="btn btn-danger">reset settings list</button>
+            </div>
+        </div>
+        <hr>
+
+        <div id="chartDiv">
+            <canvas id="myChart" width="5" height="2"></canvas>
+        </div>
+    </div>
+</body>
+
+</html>
