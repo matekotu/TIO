@@ -1,7 +1,7 @@
 # TIO
-1. Install dependencies
+1. Install dependencies:
 npm install
-2. Build project
+2. Build project:
 npm run build
-3. Start project
+3. Start project:
 npm start
